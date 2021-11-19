@@ -44,4 +44,12 @@ class PybammStandardParameterClass:
 
         # return X_f, Y
 
+    def get_interpolation_parameters_json(self):
+
+        params = self.get_interpolation_parameters()
+
+        json_data = {"data": params}
+
+        return json_data
+
 
