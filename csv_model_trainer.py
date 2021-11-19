@@ -3,6 +3,7 @@ from sklearn.ensemble import RandomForestRegressor
 import pickle
 import os
 import json
+from pkl_input import PybammStandardParameterClass
 
 
 def train_model(csvpath, pkl_filename, choice_number=None, grid_number=None):
@@ -37,6 +38,13 @@ def train_model(csvpath, pkl_filename, choice_number=None, grid_number=None):
 
     with open(pkl_filename, 'wb') as file:
         pickle.dump(regressor, file)
+
+    pspc = PybammStandardParameterClass(pkl_filename=pkl_filename)
+
+    json_data = pspc.get_interpolation_parameters_json()
+
+    with open(pkl_filename[0] + '_2D.json', 'w') as jsonfile:
+        json.dump(json_data, jsonfile)
 
 
 if __name__ == "__main__":
