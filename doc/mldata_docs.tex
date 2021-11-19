@@ -1,0 +1,107 @@
+\documentclass[]{report}
+
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+
+\usepackage{pythonhighlight}
+
+\usepackage{listings}
+
+\usepackage{graphicx}
+
+\sloppy
+
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% Title Page
+\title{PyBaMM machine learning parameter data parsing - Documentation}
+\author{Elias Hohl}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+	This documents explains how to supply PyBaMM with measured parameter data dependent of one or two variables.
+\end{abstract}
+
+\section{Usage}
+
+\subsection{Parsing 1D data}
+
+PyBaMM can parse 1D data using interpolation. A two-column CSV file called \textit{graphite\_volume\_change\_Ai2020.csv} can be supplied as a parameter as follows:
+
+\begin{lstlisting}[language=python]
+	parameter_values = pybamm.ParameterValues()
+	parameter_values['Negative electrode volume change'] = "[data]graphite_volume_change_Ai2020"
+\end{lstlisting}
+
+The columns of the CSV file should be formatted like this:
+
+\begin{python}
+independent variable 1, dependent variable
+\end{python}
+
+\subsection{Parsing 2D data}
+
+PyBaMM was extended to parse 2D data using machine learning. Follow these steps to read data from a CSV file called \textit{lico2\_diffusivity\_Dualfoil1998.csv}:
+
+\begin{enumerate}
+\item Launch the script \textit{csv\_model\_trainer.py}. Supply the CSV path and leave all other settings at the default values. This will create a .pkl file containing the model, and a .json file containing the configuration.
+\item Supply the data to PyBaMM in a similar way as done for 1D data:
+	\begin{lstlisting}[language=python]
+		parameter_values = pybamm.ParameterValues()
+		parameter_values['Negative electrode volume change'] = "[ml data]lico2_diffusivity_Dualfoil1998"
+	\end{lstlisting}
+\end{enumerate}
+
+The columns of the CSV file should be formatted like this:
+
+\begin{python}
+independent variable 1, independent variable 2, dependent variable
+\end{python}
+
+\section{Working principles}
+
+Using the casadi 1D interpolant is pretty straightforward. However, this is not the case for 2D data. The 2D interpolant requires a perfect grid of measurement data, which is experimentally as good as impossible to generate. Therefore, a machine learning method (Random Forest Regressor) is used in a preprocessing step to create a model from the supplied data, which can be used to evaluate a grid of input data for the casadi 2D interpolant:
+
+\begin{python}
+regressor = RandomForestRegressor(n_estimators=100, random_state=0)
+
+regressor.fit(input_data[:, 0:-1], input_data[:, -1])
+\end{python}
+
+\begin{python}
+X = list(np.meshgrid(*x_))
+
+x = np.column_stack([el.reshape(-1, 1) for el in X])
+
+y = self.model.predict(x)
+\end{python}
+
+
+\end{document}
