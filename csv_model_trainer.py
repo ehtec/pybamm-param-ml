@@ -43,7 +43,7 @@ def train_model(csvpath, pkl_filename, choice_number=None, grid_number=None):
 
     json_data = pspc.get_interpolation_parameters_json()
 
-    with open(pkl_filename[0] + '_2D.json', 'w') as jsonfile:
+    with open(os.path.splitext(pkl_filename)[0] + '_2D.json', 'w') as jsonfile:
         json.dump(json_data, jsonfile)
 
 
