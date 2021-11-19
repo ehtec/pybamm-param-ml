@@ -49,6 +49,24 @@
 	This documents explains how to supply PyBaMM with measured parameter data dependent of one or two variables.
 \end{abstract}
 
+\section{Installation}
+
+The 2D parsing feature was included into the PyBaMM master branch. You will be able to use it when installing the latest version of PyBaMM from github:
+
+\begin{lstlisting}[language=bash]
+# if you currently have another PyBaMM version installed:
+python -m pip uninstall pybamm
+
+# to install the newest development version from github:
+python -m pip install --upgrade git+https://github.com/pybamm-team/pybamm
+\end{lstlisting}
+
+To be able to parse 2D measurement data, you will also need to download the tools for that:
+
+\begin{lstlisting}[language=bash]
+git clone https://github.com/ehtec/pybamm-param-ml.git
+\end{lstlisting}
+
 \section{Usage}
 
 \subsection{Parsing 1D data}
@@ -71,11 +89,11 @@ independent variable 1, dependent variable
 PyBaMM was extended to parse 2D data using machine learning. Follow these steps to read data from a CSV file called \textit{lico2\_diffusivity\_Dualfoil1998.csv}:
 
 \begin{enumerate}
-\item Launch the script \textit{csv\_model\_trainer.py}. Supply the CSV path and leave all other settings at the default values. This will create a .pkl file containing the model, and a .json file containing the configuration.
+\item Launch the script \textit{csv\_model\_trainer.py}. Supply the CSV path and leave all other settings at the default values. This will create a .pkl file containing the model, and a .json file containing the configuration, and another .json file containing the 2D data (the name of the second .json file will automatically be suffixed with \_2D).
 \item Supply the data to PyBaMM in a similar way as done for 1D data:
 	\begin{lstlisting}[language=python]
 		parameter_values = pybamm.ParameterValues()
-		parameter_values['Negative electrode volume change'] = "[ml data]lico2_diffusivity_Dualfoil1998"
+		parameter_values['Negative electrode volume change'] = "[ml data]lico2_diffusivity_Dualfoil1998_2D"
 	\end{lstlisting}
 \end{enumerate}
 
